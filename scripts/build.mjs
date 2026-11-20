@@ -7,16 +7,22 @@ const out = path.join(root, 'dist');
 const production = process.argv.includes('--production');
 const siteUrl = (process.env.SITE_URL || '').replace(/\/+$/, '');
 const contactEmail = (process.env.CONTACT_EMAIL || '').trim();
-const brand = 'Tempo Lab'; // Provisional until launch.
-function validLaunchOrigin(value) {
-  try { const u = new URL(value); return u.protocol === 'https:' && u.origin === value && u.hostname.includes('.') &&
-    !/\.(pages\.dev|workers\.dev|test|invalid|example|localhost)$/i.test(u.hostname); } catch { return false; }
+const brand = 'Tempo Lab'; // Brand is provisional until launch.
+function validLaunchOrigin(origin) {
+  try {
+    const url = new URL(origin);
+    return url.protocol === 'https:' && url.origin === origin && !url.username && !url.password &&
+      !/\.(pages\.dev|workers\.dev)$/i.test(url.hostname) && url.hostname.includes('.') &&
+      !/\.(test|invalid|example|localhost)$/i.test(url.hostname);
+  } catch { return false; }
 }
 if (production && process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main') {
-  console.error('An indexable build cannot be created for a non-main Cloudflare Pages branch.'); process.exit(1);
+  console.error('Refusing indexable production build for a non-main Cloudflare Pages branch.');
+  process.exit(1);
 }
 if (production && (!validLaunchOrigin(siteUrl) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail))) {
-  console.error('Production build needs a real HTTPS domain in SITE_URL and a contact email.'); process.exit(1);
+  console.error('Production build requires a real HTTPS domain (not pages.dev) as SITE_URL and a genuine CONTACT_EMAIL.');
+  process.exit(1);
 }
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
@@ -55,22 +61,22 @@ function render(key, route, title, description) {
   const contactSection = production
     ? `<p>Send your feedback to the project contact: <a href="mailto:${escapeHtml(contactEmail)}">${escapeHtml(contactEmail)}</a>. For bug reports, include the information below.</p>`
     : '<p class="under-construction">This is a private prototype. No public support inbox has been configured. Before publishing, the site owner must set a real contact address and review the privacy notice. This form only prepares a report; it does not send anything.</p>';
-  const stage = production ? {
-    ABOUT_INTRO: 'Tempo Lab provides free Tap Tempo and BPM Delay & Reverb tools that work in your browser without accounts or audio uploads.',
-    ABOUT_DATA_STATUS: 'This version does not include advertising or analytics scripts, and no server-side account is required.',
-    PRIVACY_TRACKING: 'This version does not use advertising or analytics scripts. If enabled later, the policy and applicable consent controls must be updated before activation.',
-    PRIVACY_HOSTING: 'The website is served at ' + escapeHtml(siteUrl) + '. The hosting provider may handle routine request information. Privacy contact: ' + escapeHtml(contactEmail) + '.',
-    PRIVACY_CONTACT: 'Privacy questions can be sent to ' + escapeHtml(contactEmail) + '.'
+  const productionStatus = production ? {
+    ABOUT_INTRO: 'Tempo Lab offers two free music timing tools: Tap Tempo and a BPM Delay & Reverb Calculator. Both run in your browser and work without a user account.',
+    ABOUT_DATA_STATUS: 'No server-side account or music upload is required. This version does not include advertising or analytics scripts.',
+    PRIVACY_TRACKING: 'This version does not place advertising or analytics scripts. If these services are introduced, this policy will be updated and relevant user consent controls will be provided before activation.',
+    PRIVACY_HOSTING: `The website is delivered at <a href="${escapeHtml(siteUrl)}">${escapeHtml(siteUrl)}</a>. Hosting infrastructure may process routine request information. For questions about site data handling, contact <a href="mailto:${escapeHtml(contactEmail)}">${escapeHtml(contactEmail)}</a>.`,
+    PRIVACY_CONTACT: `For privacy questions, email <a href="mailto:${escapeHtml(contactEmail)}">${escapeHtml(contactEmail)}</a>.`
   } : {
-    ABOUT_INTRO: 'Tempo Lab is a working prototype of two browser tools. The brand and domain have not been finalized.',
-    ABOUT_DATA_STATUS: 'This prototype does not include advertising, analytics or accounts.',
-    PRIVACY_TRACKING: 'This preview does not include analytics or ads. The privacy policy and relevant consent controls must be updated before adding them.',
-    PRIVACY_HOSTING: 'The hosting provider and privacy contact must be finalized before launch.',
-    PRIVACY_CONTACT: 'A public support inbox has not been configured yet.'
+    ABOUT_INTRO: 'Tempo Lab is a working prototype of two free browser tools: Tap Tempo and a BPM Delay & Reverb Calculator. The name and domain have not been finalized.',
+    ABOUT_DATA_STATUS: 'This prototype does not include advertising, analytics or server-side user accounts.',
+    PRIVACY_TRACKING: 'This preview does not include analytics or advertising scripts. If these services are introduced, the privacy notice and consent controls must be updated first.',
+    PRIVACY_HOSTING: 'A public hosting provider, privacy contact, and retention details must be confirmed before launch.',
+    PRIVACY_CONTACT: 'A public support contact has not yet been configured.'
   };
   body = body.replaceAll('{{CONTACT_SECTION}}', contactSection);
-  for(const [key, value] of Object.entries(stage)) body = body.replaceAll('{{' + key + '}}', value);
-  if(/{{[A-Z_]+}}/.test(body)) throw new Error('Unresolved template placeholder in ' + key);
+  for (const [name, value] of Object.entries(productionStatus)) body = body.replaceAll(`{{${name}}}`, value);
+  if (/{{[A-Z_]+}}/.test(body)) throw new Error(`Unresolved template placeholder in ${key}`);
   const meta = getMeta(title, description, route, key);
   const currentNav = key === 'home' ? 'home' : key === 'delay' ? 'delay' : key === 'about' ? 'about' : key === 'contact' ? 'contact' : '';
   let finalHeader = header;
@@ -88,9 +94,19 @@ if (production) {
   fs.writeFileSync(path.join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`);
   fs.writeFileSync(path.join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`);
 } else {
-  // Crawlers need to read the page to observe noindex.
+  // Google must be allowed to crawl the page in order to observe its noindex directive.
   fs.writeFileSync(path.join(out, 'robots.txt'), 'User-agent: *\nAllow: /\n');
-  fs.writeFileSync(path.join(out, '_headers'), '/*\n  X-Robots-Tag: noindex, nofollow\n');
 }
+// Cloudflare Pages reads _headers from dist/ and applies these to static responses.
+// Keep security headers in BOTH build modes; preview adds crawler-safe noindex.
+const responseHeaders = [
+  '/*',
+  '  X-Content-Type-Options: nosniff',
+  '  Referrer-Policy: strict-origin-when-cross-origin',
+  '  X-Frame-Options: DENY',
+  '  Permissions-Policy: camera=(), microphone=(), geolocation=()',
+  ...(!production ? ['  X-Robots-Tag: noindex, nofollow'] : [])
+];
+fs.writeFileSync(path.join(out, '_headers'), responseHeaders.join('\n') + '\n');
 console.log(`${production ? 'Production' : 'Private prototype'} build ready: ${out}`);
 console.log(`Pages: ${pageConfig.map(([,route]) => '/' + (route ? route + '/' : '')).join(', ')}`);

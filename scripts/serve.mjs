@@ -23,4 +23,4 @@ http.createServer((req,res)=>{
     else res.writeHead(200,{'Content-Type':mime[path.extname(filepath)] || 'application/octet-stream','Cache-Control':'no-store'});
     fs.createReadStream(filepath).pipe(res);
   } catch { res.writeHead(500).end('Internal preview error'); }
-}).listen(port,'127.0.0.1',()=>console.log(`Private preview: http://127.0.0.1:${port}/`));
+}).listen(port,'127.0.0.1',function () { console.log(`Private preview: http://127.0.0.1:${this.address().port}/`); });

@@ -1,4 +1,4 @@
-# Tempo Lab — Free Tap BPM & Music Timing Tools (V2.3)
+# Tempo Lab — Free Tap BPM & Music Timing Tools (V2.4)
 
 An **offline-capable once loaded, zero-dependency browser prototype** for the approved V1.1 research plan. **This is a working code prototype, not an indexed SEO launch.** The name "Tempo Lab" is provisional; no domain has been purchased or deployed.
 
@@ -53,7 +53,7 @@ This creates an indexable static `dist/` build with unique canonical URLs, `robo
 
 `npm test` exercises precision, pause reset, outliers, accidental double taps, rolling history, half/double BPM, conversion values, and invalid input. Browser integration also needs to be inspected on desktop/mobile; unit tests alone do not prove all browsers are bug-free.
 
-`npm run check` runs the 20 existing calculation tests, then performs a two-mode build audit (preview and production fixture): automated assertions cover robots rules, canonical URLs, headings, internal assets/routes, sitemap, 404, contact/privacy copy and restoration of safe noindex preview output. The fake production domain and email used by this audit are local-only fixtures, not launch settings. `npm run build` still produces the default safe preview; GitHub Actions now checks both stages on every push.
+`npm run check` runs the 20 existing calculation tests, then performs a two-mode build audit (preview and production fixture): 189+ assertions cover robots rules, canonical URLs, headings, internal assets/routes, sitemap, 404, contact/privacy copy and restoration of safe noindex preview output. The fake production domain and email used by this audit are local-only fixtures, not launch settings. `npm run build` still produces the default safe preview; GitHub Actions now checks both stages on every push.
 
 Functional acceptance cases:
 
@@ -108,3 +108,12 @@ Functional acceptance cases:
 - The last BPM cache is cleared when a new measurement begins or the selected multiplier produces an out-of-range value.
 - Privacy wording now distinguishes browser-only tap timestamps from BPM query parameters in shareable URLs.
 - No AdSense or analytics scripts have been added; privacy and consent requirements must be revisited before activating them.
+
+### V2.4 production-delivery safeguards (2026-11-20)
+
+- Both preview and indexable production builds now ship a Cloudflare Pages `_headers` file. It adds `X-Content-Type-Options: nosniff`, a privacy-conscious `Referrer-Policy`, `X-Frame-Options: DENY`, and a restrictive `Permissions-Policy`. Preview builds additionally serve `X-Robots-Tag: noindex, nofollow`. Production intentionally **does not** include this header.
+- `npm run check` runs 20 calculation tests, the preview/production SEO safety audit, a compressed static-payload budget, and an HTTP smoke test of the local preview routes and trailing-slash redirect. No external packages are needed.
+- The static page budgets are **not** Lighthouse scores or measured Core Web Vitals. Current first-load HTML/CSS/JS gzip estimates are approximately **16.5 KiB for Tap Tempo and 14.4 KiB for Delay Calculator**, excluding transfer headers, network latency and browser execution. These values are derived from local compiled assets.
+- Cloudflare's `_headers` rules apply to **static asset** responses; these are not a general substitute for Pages Functions response handling. There are no Pages Functions in this project.
+- Before formal SEO launch, configure `SITE_URL` and `CONTACT_EMAIL` with the real, final values, then select `npm run build:production` in Cloudflare Pages. Until then use `npm run build`, which retains `noindex` and avoids exposing a placeholder canonical domain.
+- After publishing, use the *actual deployment URL* to check HTTP status codes, response headers, mobile Lighthouse/LCP/CLS/INP and Search Console index coverage. Neither the Github CI tests nor these local byte budgets establish live performance or SEO rankings.
