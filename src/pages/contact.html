@@ -1,0 +1,7 @@
+<main id="main"><section class="container page-hero"><nav class="breadcrumb"><a href="/">Home</a><span>/</span><span>Feedback</span></nav><span class="eyebrow" style="display:block;margin-top:27px">We take accuracy seriously</span><h1>Contact & <span>feedback</span></h1><p class="lede">Found a broken control, incorrect timing or an accessibility problem? Document the details so the project owner can reproduce it.</p></section><section class="container"><article class="content-card"><h2>Project feedback</h2>{{CONTACT_SECTION}}<h2>Suggested bug report</h2><p>Include the browser/device, steps to reproduce the issue, expected result and observed result. Timing feedback is most useful when you include the tap intervals or test BPM.</p><label for="feedback-template" class="field-label">Copyable report template</label><textarea class="copy-template" id="feedback-template" readonly>Browser and device:
+Tool URL:
+Steps to reproduce:
+Expected result:
+Actual result:
+Test BPM or tap intervals:
+</textarea><div style="margin-top:15px"><button id="copy-feedback" type="button" class="btn btn-primary">Copy report template</button></div></article></section></main><script type="module">import {copyText,notify} from '/assets/shared.js'; document.querySelector('#copy-feedback').addEventListener('click', async()=>{ const value=document.querySelector('#feedback-template').value; notify(await copyText(value)?'Template copied':'Could not copy template'); });</script>
