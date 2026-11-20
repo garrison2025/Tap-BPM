@@ -149,3 +149,10 @@
  .result-header{margin:23px 0 14px}
  .table-formula{font-size:11px}
 }
+
+/* V2.2 interaction polish: distinguish active measurements without visual clutter. */
+.instrument[data-state="listening"] .live-led,
+.instrument[data-state="calibrating"] .live-led,
+.instrument[data-state="measuring"] .live-led { background:var(--yellow); box-shadow:0 0 0 4px rgba(221,246,106,.2); }
+.instrument[data-state="paused"] .live-led { background:#a0a8a2; box-shadow:none; }
+.instrument[data-state="measuring"] .display-unit { color:var(--yellow); }

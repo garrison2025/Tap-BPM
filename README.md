@@ -1,10 +1,6 @@
-# Tempo Lab — Tap BPM / Free SEO Traffic Site Prototype (V2.0 UI)
+# Tempo Lab — Tap BPM / Free SEO Traffic Site Prototype (V1.1)
 
 An **offline-capable once loaded, zero-dependency browser prototype** for the approved V1.1 research plan. **This is a working code prototype, not an indexed SEO launch.** The name "Tempo Lab" is provisional; no domain has been purchased or deployed.
-
-## UI redesign V2.0
-
-Visual references: Ableton Learning Music (rhythm visualization), Soundbrenner (tactile interaction), Linear (typographic restraint). An original light editorial palette with a dark tempo instrument, indigo accent, and lime interaction color. No external fonts/assets and no JS dependencies; calculations and routes unchanged.
 
 ## Included
 
@@ -22,7 +18,7 @@ Visual references: Ableton Learning Music (rhythm visualization), Soundbrenner (
 Requires Node.js >=18 only for local builds and tests (no `npm install` required).
 
 ```powershell
-cd Tap_BPM_UI_V2
+cd Tap_BPM_Prototype_V1.1
 npm test
 npm run build
 npm run dev
@@ -85,6 +81,7 @@ Functional acceptance cases:
 7. No third-party advertisements, analytics, tracking, consent manager or `ads.txt` are added in this prototype.
 8. User's V1.1 research workbook is supplied separately / in `research/` for reference. None of its historical SEO figures are fabricated or used to create doorway pages.
 
+
 ## UI V2.1 refinement (2026-11-20)
 
 - Reduced the accent palette to one high-visibility lime interaction color, with indigo reserved for selective data emphasis.
@@ -92,3 +89,11 @@ Functional acceptance cases:
 - Replaced the full-lime Delay input panel with a calm neutral surface and added clear `aria-pressed` feedback to BPM presets.
 - Preserved all timing algorithms, routes, search intent targeting and prototype `noindex` protection.
 - Verified browser layouts at 1440, 390 and 320 CSS pixels, alongside all 20 existing timing tests.
+
+
+### V2.2 interaction reliability pass
+- Spacebar taps never intercept native keyboard activation of FAQ summaries, links, buttons, or editable elements.
+- Reset clears the cached BPM so the calculator cannot resurrect a cleared measurement.
+- Invalid Delay BPM clears all dependent references and disables copy/share until input is valid again.
+- Mobile navigation can be dismissed with Escape or an outside click, with focus restored to the menu control on Escape.
+- Reduced live-region verbosity during rapid BPM measurements, plus distinct active/paused status indicator.

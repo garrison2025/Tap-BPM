@@ -24,7 +24,18 @@ function render() {
   const placeholder = document.querySelector('#delay-invalid');
   output.hidden = bpm === null;
   placeholder.hidden = bpm !== null;
-  if (bpm === null) return;
+  const share = document.querySelector('#share-delay');
+  const copyTable = document.querySelector('#copy-timing');
+  share.disabled = bpm === null;
+  copyTable.disabled = bpm === null;
+  if (bpm === null) {
+    delete share.dataset.shareUrl;
+    ['#predelay', '#reverb-short', '#reverb-long'].forEach((id) => {
+      document.querySelector(id).textContent = '—';
+    });
+    document.querySelector('#delay-summary').textContent = 'Enter a valid BPM to see the note duration and related studio references.';
+    return;
+  }
   const quarter = quarterNoteMs(bpm);
   const table = timingTable(bpm);
   document.querySelector('#quarter-ms').textContent = formatMs(quarter);

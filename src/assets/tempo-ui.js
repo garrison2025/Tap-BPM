@@ -12,6 +12,7 @@ const interval = $('#avg-interval');
 const live = $('#tempo-live');
 const visual = $('#tap-visual');
 const meter = $('#consistency-bar');
+const instrument = $('#tempo-tool');
 const factorButtons = [...document.querySelectorAll('[data-bpm-factor]')];
 let state = createTempoState();
 let factor = 1;
@@ -27,9 +28,13 @@ function render() {
   consistency.textContent = consistencyLabel(state.consistency, state.tapCount);
   interval.textContent = state.medianInterval == null ? '—' : `${Math.round(state.medianInterval)} ms`;
   meter.style.width = `${state.consistency ?? 0}%`;
+  instrument.dataset.state = state.status;
   status.textContent = state.status === 'ready' ? 'READY TO TAP' : state.status === 'paused' ? 'PAUSED' : state.status === 'measuring' ? 'LOCKING IN' : state.status === 'calibrating' ? 'FINDING YOUR RHYTHM' : 'LISTENING';
   hint.textContent = state.status === 'paused' ? 'Tap again to start a fresh measurement.' : state.tapCount === 0 ? 'Tap at least twice to calculate your BPM.' : state.tapCount < 4 ? 'Keep a steady beat for a better reading.' : 'Great. Keep tapping to refine the estimate.';
-  live.textContent = value === null ? 'Waiting for taps' : `${value} beats per minute. ${state.tapCount} taps.`;
+  // Avoid queuing a long screen-reader announcement on every rapid tap.
+  if (state.tapCount === 0 || state.tapCount === 2 || (state.tapCount >= 4 && state.tapCount % 4 === 0) || state.status === 'paused') {
+    live.textContent = value === null ? 'Waiting for taps' : `${value} beats per minute. ${state.tapCount} taps.`;
+  }
   $('#copy-bpm').disabled = value === null;
   $('#open-delay').href = value === null ? '/delay-reverb-calculator/' : `/delay-reverb-calculator/?bpm=${encodeURIComponent(value)}`;
 }
@@ -76,7 +81,10 @@ tapButton.addEventListener('click', register);
 document.addEventListener('keydown', (e) => {
   if (e.code !== 'Space' || e.repeat || e.altKey || e.ctrlKey || e.metaKey) return;
   const active = document.activeElement;
-  if (active && (active.matches('input, textarea, select, [contenteditable="true"]') || (active.matches('button, a') && active !== tapButton))) return;
+  // Space should activate focused controls (FAQ summaries, menu items, links), not tap BPM.
+  // The tap button remains a supported keyboard target.
+  if (active && active !== tapButton && active !== document.body && active !== document.documentElement &&
+      (active.closest('input, textarea, select, button, a, summary, [role="button"], [role="switch"], [role="checkbox"], [role="radio"], [contenteditable], [contenteditable="true"]') || active.isContentEditable)) return;
   e.preventDefault();
   register();
 });
@@ -84,6 +92,7 @@ document.addEventListener('keydown', (e) => {
 $('#reset-taps').addEventListener('click', () => {
   clearTimeout(idleTimer);
   state = createTempoState();
+  try { sessionStorage.removeItem('tempo-lab-last-bpm'); } catch { /* optional */ }
   factor = 1;
   factorButtons.forEach((b) => { b.classList.toggle('selected', b.dataset.bpmFactor === '1'); b.setAttribute('aria-pressed', String(b.dataset.bpmFactor === '1')); });
   render();

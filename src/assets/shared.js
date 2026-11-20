@@ -31,12 +31,22 @@ export async function copyText(text) {
 const nav = document.querySelector('[data-mobile-nav]');
 const navBtn = document.querySelector('[data-nav-toggle]');
 if (nav && navBtn) {
+  const closeNav = (restoreFocus = false) => {
+    nav.classList.remove('is-open');
+    navBtn.setAttribute('aria-expanded', 'false');
+    navBtn.textContent = '☰ Menu';
+    if (restoreFocus) navBtn.focus();
+  };
   navBtn.addEventListener('click', () => {
     const open = nav.classList.toggle('is-open');
     navBtn.setAttribute('aria-expanded', String(open));
+    navBtn.textContent = open ? '✕ Close' : '☰ Menu';
   });
-  nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
-    nav.classList.remove('is-open');
-    navBtn.setAttribute('aria-expanded', 'false');
-  }));
+  nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => closeNav()));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && nav.classList.contains('is-open')) closeNav(true);
+  });
+  document.addEventListener('pointerdown', (event) => {
+    if (nav.classList.contains('is-open') && !nav.contains(event.target) && !navBtn.contains(event.target)) closeNav();
+  });
 }
