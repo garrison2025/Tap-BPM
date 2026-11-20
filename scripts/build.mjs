@@ -7,10 +7,16 @@ const out = path.join(root, 'dist');
 const production = process.argv.includes('--production');
 const siteUrl = (process.env.SITE_URL || '').replace(/\/+$/, '');
 const contactEmail = (process.env.CONTACT_EMAIL || '').trim();
-const brand = 'Tempo Lab'; // PROVISIONAL. Update the final brand and project metadata before launch.
-if (production && (!/^https:\/\/[a-z0-9.-]+(?::\d+)?(?:\/.*)?$/i.test(siteUrl) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail))) {
-  console.error('Production build requires HTTPS SITE_URL and a genuine CONTACT_EMAIL. Example: SITE_URL=https://yourdomain.com CONTACT_EMAIL=your-real-email npm run build:production');
-  process.exit(1);
+const brand = 'Tempo Lab'; // Provisional until launch.
+function validLaunchOrigin(value) {
+  try { const u = new URL(value); return u.protocol === 'https:' && u.origin === value && u.hostname.includes('.') &&
+    !/\.(pages\.dev|workers\.dev|test|invalid|example|localhost)$/i.test(u.hostname); } catch { return false; }
+}
+if (production && process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main') {
+  console.error('An indexable build cannot be created for a non-main Cloudflare Pages branch.'); process.exit(1);
+}
+if (production && (!validLaunchOrigin(siteUrl) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail))) {
+  console.error('Production build needs a real HTTPS domain in SITE_URL and a contact email.'); process.exit(1);
 }
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
@@ -27,7 +33,7 @@ const escapeHtml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').r
 const year = new Date().getUTCFullYear();
 const nav = '<nav id="primary-nav" data-mobile-nav class="nav" aria-label="Primary navigation"><a href="/" data-nav-home>Tap Tempo</a><a href="/delay-reverb-calculator/" data-nav-delay>Delay Calculator</a><a href="/about/" data-nav-about>About</a><a href="/contact/" data-nav-contact>Feedback</a></nav>';
 const header = `<a class="sr-only" style="position:fixed" href="#main">Skip to content</a><header class="header"><div class="container header-inner"><a class="brand" href="/" aria-label="Tempo Lab home"><span class="brand-mark" aria-hidden="true"><b></b><b></b><b></b><b></b></span><span class="brand-word">tempo<span>lab.</span></span></a>${nav}<span class="header-utility"><i></i> IN THE POCKET. ON THE BEAT.</span><button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation">☰ Menu</button><a class="header-cta" href="/delay-reverb-calculator/">Timing calculator ↗</a></div></header>`;
-const footer = `<footer class="footer"><div class="container footer-grid"><div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><b></b><b></b><b></b><b></b></span><span class="brand-word">tempo<span>lab.</span></span></a><p class="footer-note">© ${year} Tempo Lab prototype. Free rhythm tools, no uploads. Brand provisional until launch.</p></div><div class="footer-links"><a href="/">Tap Tempo</a><a href="/delay-reverb-calculator/">Delay Calculator</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/contact/">Feedback</a></div></div></footer><div class="toast" role="status" aria-live="polite" data-toast></div><script type="module" src="/assets/shared.js"></script>`;
+const footer = `<footer class="footer"><div class="container footer-grid"><div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><b></b><b></b><b></b><b></b></span><span class="brand-word">tempo<span>lab.</span></span></a><p class="footer-note">© ${year} Tempo Lab${production ? '' : ' prototype'}. Free rhythm tools, no uploads.${production ? '' : ' Brand provisional until launch.'}</p></div><div class="footer-links"><a href="/">Tap Tempo</a><a href="/delay-reverb-calculator/">Delay Calculator</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/contact/">Feedback</a></div></div></footer><div class="toast" role="status" aria-live="polite" data-toast></div><script type="module" src="/assets/shared.js"></script>`;
 function getMeta(title, description, route, key) {
   const url = siteUrl + '/' + (route ? `${route}/` : '');
   const base = `<meta name="description" content="${escapeHtml(description)}"/><meta name="theme-color" content="#f5f6f2"/><meta property="og:title" content="${escapeHtml(title)}"/><meta property="og:description" content="${escapeHtml(description)}"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary"/>`;
@@ -49,7 +55,22 @@ function render(key, route, title, description) {
   const contactSection = production
     ? `<p>Send your feedback to the project contact: <a href="mailto:${escapeHtml(contactEmail)}">${escapeHtml(contactEmail)}</a>. For bug reports, include the information below.</p>`
     : '<p class="under-construction">This is a private prototype. No public support inbox has been configured. Before publishing, the site owner must set a real contact address and review the privacy notice. This form only prepares a report; it does not send anything.</p>';
+  const stage = production ? {
+    ABOUT_INTRO: 'Tempo Lab provides free Tap Tempo and BPM Delay & Reverb tools that work in your browser without accounts or audio uploads.',
+    ABOUT_DATA_STATUS: 'This version does not include advertising or analytics scripts, and no server-side account is required.',
+    PRIVACY_TRACKING: 'This version does not use advertising or analytics scripts. If enabled later, the policy and applicable consent controls must be updated before activation.',
+    PRIVACY_HOSTING: 'The website is served at ' + escapeHtml(siteUrl) + '. The hosting provider may handle routine request information. Privacy contact: ' + escapeHtml(contactEmail) + '.',
+    PRIVACY_CONTACT: 'Privacy questions can be sent to ' + escapeHtml(contactEmail) + '.'
+  } : {
+    ABOUT_INTRO: 'Tempo Lab is a working prototype of two browser tools. The brand and domain have not been finalized.',
+    ABOUT_DATA_STATUS: 'This prototype does not include advertising, analytics or accounts.',
+    PRIVACY_TRACKING: 'This preview does not include analytics or ads. The privacy policy and relevant consent controls must be updated before adding them.',
+    PRIVACY_HOSTING: 'The hosting provider and privacy contact must be finalized before launch.',
+    PRIVACY_CONTACT: 'A public support inbox has not been configured yet.'
+  };
   body = body.replaceAll('{{CONTACT_SECTION}}', contactSection);
+  for(const [key, value] of Object.entries(stage)) body = body.replaceAll('{{' + key + '}}', value);
+  if(/{{[A-Z_]+}}/.test(body)) throw new Error('Unresolved template placeholder in ' + key);
   const meta = getMeta(title, description, route, key);
   const currentNav = key === 'home' ? 'home' : key === 'delay' ? 'delay' : key === 'about' ? 'about' : key === 'contact' ? 'contact' : '';
   let finalHeader = header;
@@ -67,7 +88,9 @@ if (production) {
   fs.writeFileSync(path.join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`);
   fs.writeFileSync(path.join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`);
 } else {
-  fs.writeFileSync(path.join(out, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+  // Crawlers need to read the page to observe noindex.
+  fs.writeFileSync(path.join(out, 'robots.txt'), 'User-agent: *\nAllow: /\n');
+  fs.writeFileSync(path.join(out, '_headers'), '/*\n  X-Robots-Tag: noindex, nofollow\n');
 }
 console.log(`${production ? 'Production' : 'Private prototype'} build ready: ${out}`);
 console.log(`Pages: ${pageConfig.map(([,route]) => '/' + (route ? route + '/' : '')).join(', ')}`);
