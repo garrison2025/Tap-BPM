@@ -1,4 +1,4 @@
-# Tempo Lab — Tap BPM / Free SEO Traffic Site Prototype (V1.1)
+# Tempo Lab — Free Tap BPM & Music Timing Tools (V2.3)
 
 An **offline-capable once loaded, zero-dependency browser prototype** for the approved V1.1 research plan. **This is a working code prototype, not an indexed SEO launch.** The name "Tempo Lab" is provisional; no domain has been purchased or deployed.
 
@@ -6,7 +6,7 @@ An **offline-capable once loaded, zero-dependency browser prototype** for the ap
 
 - `/` — functional Tap Tempo / BPM Tapper: touch / mouse / Space, 120 ms accidental double-tap rejection, median with outlier filtering, last-12-interval rolling measurement, half-time / double-time, consistency indicator, optional opt-in click sound, copy BPM, easy transfer to calculator.
 - `/delay-reverb-calculator/` — 20–300 BPM conversion, six note divisions × straight/dotted/triplet (18 timings), milliseconds, Hertz, beat/bar references, **musical** pre-delay and decay guidelines (not acoustic RT60), copy table and shareable BPM link.
-- `/about/`, `/privacy/`, `/contact/`, `404.html` — written, honest prototype messaging; contact email required for public launch.
+- `/about/`, `/privacy/`, `/contact/`, `404.html` — stage-aware pages: preview is clearly marked as a prototype; production uses public-facing copy and requires a real contact email.
 - Accessibility: semantic controls, aria-live, focus states, keyboard, touch, prefers-reduced-motion and responsive layout.
 - Pure static HTML, CSS, JavaScript; no NPM runtime packages, paid API, database, server side processing or external font dependencies.
 - SEO policy: one main Tap BPM homepage for overlapping intent and one genuinely distinct delay calculator page; **no mass-created duplicate keyword pages**.
@@ -18,9 +18,8 @@ An **offline-capable once loaded, zero-dependency browser prototype** for the ap
 Requires Node.js >=18 only for local builds and tests (no `npm install` required).
 
 ```powershell
-cd Tap_BPM_Prototype_V1.1
-npm test
-npm run build
+cd Tap-BPM
+npm run check
 npm run dev
 ```
 
@@ -34,7 +33,7 @@ Open `http://127.0.0.1:4173/` and `http://127.0.0.1:4173/delay-reverb-calculator
 
 ### Private-preview SEO safety
 
-`npm run build` creates a **private preview**: `robots.txt` disallows all crawling and every HTML page contains `noindex,nofollow`. No canonical or sitemap is generated without a domain. Do **not** publish this preview and claim that real SEO is validated.
+`npm run build` creates a **non-indexable preview**: `robots.txt` permits crawling so search engines can see the HTML `noindex,nofollow` directive. Cloudflare Pages also receives an `_headers` file setting `X-Robots-Tag: noindex, nofollow` for preview responses. No canonical or sitemap is generated without a domain. Do **not** publish this preview and claim that real SEO is validated.
 
 ### Production build (only after deciding to launch)
 
@@ -46,13 +45,15 @@ $env:CONTACT_EMAIL = 'YOUR-REAL-CONTACT-EMAIL'
 npm run build:production
 ```
 
-This creates a ready-to-upload `dist/` with unique canonical URLs, `robots.txt`, `sitemap.xml`, WebApplication JSON-LD on the two working tools, Open Graph metadata, and clickable contact mailto address. The build **fails** if either required production setting is missing. Before public launch update the provisional brand, privacy/operator details and legal notices. If enabling AdSense/GA4, update privacy and configure relevant consent management first.
+This creates an indexable static `dist/` build with unique canonical URLs, `robots.txt`, `sitemap.xml`, WebApplication JSON-LD on the two working tools, Open Graph metadata, and clickable contact mailto address. The build **fails** if either required production setting is missing or SITE_URL is a Cloudflare Pages preview hostname; it requires an HTTPS domain origin with no path or query. Before public launch update the provisional brand, privacy/operator details and legal notices. If enabling AdSense/GA4, update privacy and configure relevant consent management first.
 
 **Cloudflare Pages:** Framework preset None; build command `npm run build:production`; output directory `dist`. Add `SITE_URL` and `CONTACT_EMAIL` as environment variables in Cloudflare Pages. Do not launch publicly until brand, pages, policies, routing and ad approval are verified. Static hosting requires no Functions. If previewing on Cloudflare without formal SEO testing, use `npm run build` (robots=noindex).
 
 ## Testing and quality gates
 
 `npm test` exercises precision, pause reset, outliers, accidental double taps, rolling history, half/double BPM, conversion values, and invalid input. Browser integration also needs to be inspected on desktop/mobile; unit tests alone do not prove all browsers are bug-free.
+
+`npm run check` runs the 20 existing calculation tests, then performs a two-mode build audit (preview and production fixture): automated assertions cover robots rules, canonical URLs, headings, internal assets/routes, sitemap, 404, contact/privacy copy and restoration of safe noindex preview output. The fake production domain and email used by this audit are local-only fixtures, not launch settings. `npm run build` still produces the default safe preview; GitHub Actions now checks both stages on every push.
 
 Functional acceptance cases:
 
@@ -77,7 +78,7 @@ Functional acceptance cases:
 3. Do not treat prototype testing as validated Google rankings, domain traffic or AdSense approval.
 4. The helper's "consistency" uses a heuristic median absolute deviation; it is not a calibrated measurement device.
 5. Reverb decay suggestions are *musical timing references*, not prescriptions for acoustics or actual RT60.
-6. The app stores the latest BPM in sessionStorage for navigation, but no server receives tap history.
+6. The app stores a supported BPM in sessionStorage for navigation, but no server receives tap history. A shareable URL can include a BPM parameter visible to the host as part of the page request.
 7. No third-party advertisements, analytics, tracking, consent manager or `ads.txt` are added in this prototype.
 8. User's V1.1 research workbook is supplied separately / in `research/` for reference. None of its historical SEO figures are fabricated or used to create doorway pages.
 
@@ -97,3 +98,13 @@ Functional acceptance cases:
 - Invalid Delay BPM clears all dependent references and disables copy/share until input is valid again.
 - Mobile navigation can be dismissed with Escape or an outside click, with focus restored to the menu control on Escape.
 - Reduced live-region verbosity during rapid BPM measurements, plus distinct active/paused status indicator.
+
+
+### V2.3 SEO / release safety and cross-tool continuity
+- Production About, Privacy, Footer and 404 text no longer contain prototype-only claims. Preview builds remain noindex.
+- Production builds require an HTTPS domain origin and a contact email; Cloudflare `pages.dev` and `workers.dev` preview domains and non-main Pages branches are rejected for indexed production builds.
+- A build audit verifies internal routes, metadata, canonical, sitemap, 404, preview robots and output restoration.
+- BPM readings outside the Delay Calculator's 20–300 range are shown honestly; the link opens the calculator without a misleading BPM transfer.
+- The last BPM cache is cleared when a new measurement begins or the selected multiplier produces an out-of-range value.
+- Privacy wording now distinguishes browser-only tap timestamps from BPM query parameters in shareable URLs.
+- No AdSense or analytics scripts have been added; privacy and consent requirements must be revisited before activating them.

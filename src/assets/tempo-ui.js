@@ -36,7 +36,17 @@ function render() {
     live.textContent = value === null ? 'Waiting for taps' : `${value} beats per minute. ${state.tapCount} taps.`;
   }
   $('#copy-bpm').disabled = value === null;
-  $('#open-delay').href = value === null ? '/delay-reverb-calculator/' : `/delay-reverb-calculator/?bpm=${encodeURIComponent(value)}`;
+  const delayLink = $('#open-delay');
+  const transferable = value !== null && value >= 20 && value <= 300;
+  delayLink.href = transferable ? `/delay-reverb-calculator/?bpm=${encodeURIComponent(value)}` : '/delay-reverb-calculator/';
+  delayLink.innerHTML = `${transferable ? 'Use this BPM' : 'Open calculator'} <span aria-hidden="true">↗</span>`;
+  if (value !== null && !transferable) {
+    delayLink.title = 'The delay calculator accepts 20–300 BPM. Enter a supported value manually.';
+    delayLink.setAttribute('aria-label', `Measured ${value} BPM is outside the calculator range of 20 to 300. Open calculator without transferring this tempo.`);
+  } else {
+    delayLink.removeAttribute('title');
+    delayLink.removeAttribute('aria-label');
+  }
 }
 
 function beep() {
@@ -69,9 +79,11 @@ function register() {
   visual.classList.remove('pulse');
   void visual.offsetWidth;
   visual.classList.add('pulse');
-  if (state.bpm) {
-    try { sessionStorage.setItem('tempo-lab-last-bpm', String(displayBpm(state.bpm, factor))); } catch { /* optional */ }
-  }
+  try {
+    const selected = displayBpm(state.bpm, factor);
+    if (selected !== null && selected >= 20 && selected <= 300) sessionStorage.setItem('tempo-lab-last-bpm', String(selected));
+    else sessionStorage.removeItem('tempo-lab-last-bpm');
+  } catch { /* optional */ }
   history.push(Date.now());
   if (history.length > 50) history.shift();
   render();
@@ -102,9 +114,11 @@ $('#reset-taps').addEventListener('click', () => {
 factorButtons.forEach((button) => button.addEventListener('click', () => {
   factor = Number(button.dataset.bpmFactor);
   factorButtons.forEach((item) => { item.classList.toggle('selected', item === button); item.setAttribute('aria-pressed', String(item === button)); });
-  if (state.bpm) {
-    try { sessionStorage.setItem('tempo-lab-last-bpm', String(displayBpm(state.bpm, factor))); } catch {}
-  }
+  try {
+    const selected = displayBpm(state.bpm, factor);
+    if (selected !== null && selected >= 20 && selected <= 300) sessionStorage.setItem('tempo-lab-last-bpm', String(selected));
+    else sessionStorage.removeItem('tempo-lab-last-bpm');
+  } catch { /* optional */ }
   render();
 }));
 
