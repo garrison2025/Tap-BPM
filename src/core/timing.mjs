@@ -39,3 +39,14 @@ export const millisecondsToHertz = (ms) => Number.isFinite(ms) && ms > 0 ? 1000 
 export function formatMs(value) {
   return value === null || !Number.isFinite(value) ? '—' : `${value.toLocaleString('en-US', { maximumFractionDigits: 1, minimumFractionDigits: 1 })} ms`;
 }
+
+/** Musical bar length measured in quarter-note beats. In 6/8, six eighth notes equal three quarter notes. */
+export const TIME_SIGNATURES = Object.freeze({ '2/4': 2, '3/4': 3, '4/4': 4, '6/8': 3, '12/8': 6 });
+export function validateMeter(meter) {
+  return typeof meter === 'string' && Object.hasOwn(TIME_SIGNATURES, meter) ? meter : null;
+}
+export function barDurationMs(bpm, meter = '4/4') {
+  const quarter = quarterNoteMs(bpm);
+  const valid = validateMeter(meter);
+  return quarter === null || valid === null ? null : quarter * TIME_SIGNATURES[valid];
+}

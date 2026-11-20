@@ -29,8 +29,8 @@ fs.mkdirSync(out, { recursive: true });
 fs.cpSync(path.join(src, 'assets'), path.join(out, 'assets'), { recursive: true });
 fs.cpSync(path.join(src, 'core'), path.join(out, 'core'), { recursive: true });
 const pageConfig = [
-  ['home', '', 'Tap Tempo – Free BPM Tapper & Tempo Counter', 'Find a song’s tempo by tapping the beat. Fast, free BPM counter with keyboard support, stable timing and a mobile-friendly interface.'],
-  ['delay', 'delay-reverb-calculator', 'BPM Delay & Reverb Calculator – Note Timing in Milliseconds', 'Calculate quarter, eighth, sixteenth, dotted and triplet delay times in milliseconds for any BPM. Free music production timing calculator.'],
+  ['home', '', 'Tap Tempo & BPM Tapper — Free BPM Counter Online', 'Tap to measure beats per minute with our free Tap Tempo and BPM counter. Use Space or touch, track tap stability, and copy your BPM. No file uploads.'],
+  ['delay', 'delay-reverb-calculator', 'BPM Delay Calculator — Dotted & Triplet Timing in ms', 'Free BPM delay and reverb timing calculator for producers: convert BPM to note milliseconds, choose a time signature, and copy straight, dotted or triplet delays.'],
   ['about', 'about', 'About Tempo Lab – Free Music Timing Tools', 'Learn how our free browser-based Tap Tempo and BPM Delay Calculator work and how they handle timing and privacy.'],
   ['privacy', 'privacy', 'Privacy – Tempo Lab', 'Read how the free Tap Tempo and BPM Timing Calculator process timing information locally in your browser.'],
   ['contact', 'contact', 'Contact & Feedback – Tempo Lab', 'Share feedback about our free music tempo tools and report inaccurate timing or browser compatibility problems.']

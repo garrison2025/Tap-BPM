@@ -1,0 +1,22 @@
+/** Prevent SEO and functionality drift from the user-validated intent map. */
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const read = rel => fs.readFileSync(path.join(root, 'dist', rel), 'utf8');
+const home = read('index.html');
+const delay = read('delay-reverb-calculator/index.html');
+const h1 = (html) => (html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/i)||[''])[0].replace(/<[^>]*>/g,'').replace(/\s+/g,' ').toLowerCase();
+assert.match(h1(home), /tap tempo/i, 'Home H1 must explain the manual Tap Tempo tool');
+assert.match(home, /bpm tapper/i, 'Home should plainly describe its BPM tapper function');
+assert.match(home, /bpm counter/i, 'Home should describe BPM counter method without extra doorway pages');
+assert.match(home, /60,000 ÷ milliseconds/i, 'Home should explain how BPM is derived');
+assert.match(h1(delay), /bpm delay[\s\S]*reverb/i, 'Calculator H1 must explain its music timing purpose');
+assert.match(delay, /id="time-signature"/, 'Time signature selector is present');
+assert.match(delay, /id="bar-metric-label"/, 'Dynamic meter result has a visible label');
+assert.match(delay, /copy its milliseconds/i, 'Copyable note timing is explained');
+assert.match(delay, /RT60/i, 'Do not misrepresent musical timing as room acoustics');
+assert.ok(!fs.existsSync(path.join(root,'dist','bpm-finder')), 'Do not launch an unsupported automatic BPM finder');
+assert.ok(!fs.existsSync(path.join(root,'dist','metronome')), 'Do not publish a placeholder metronome route');
+console.log('SEO intent audit: 11 checks passed across the two real tools.');

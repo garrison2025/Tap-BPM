@@ -117,3 +117,10 @@ Functional acceptance cases:
 - Cloudflare's `_headers` rules apply to **static asset** responses; these are not a general substitute for Pages Functions response handling. There are no Pages Functions in this project.
 - Before formal SEO launch, configure `SITE_URL` and `CONTACT_EMAIL` with the real, final values, then select `npm run build:production` in Cloudflare Pages. Until then use `npm run build`, which retains `noindex` and avoids exposing a placeholder canonical domain.
 - After publishing, use the *actual deployment URL* to check HTTP status codes, response headers, mobile Lighthouse/LCP/CLS/INP and Search Console index coverage. Neither the Github CI tests nor these local byte budgets establish live performance or SEO rankings.
+
+### V2.5 — keyword intent and workflow improvements (2026-11-20)
+- The homepage H1 now explicitly identifies **Tap Tempo**, while the main tool remains one page covering overlapping manual BPM tapper/counter queries. A concise how-to section shows the BPM calculation and limitations.
+- The Delay calculator now supports 2/4, 3/4, 4/4, 6/8 and 12/8 bar references at **quarter-note BPM**. It can copy a single displayed note timing (ms), copy the full table, and share both BPM and time signature in the URL.
+- The meter changes **bar-dependent guidance only**; straight/dotted/triplet note milliseconds remain quarter-note BPM based. In compound meters such as 6/8, a dotted-quarter tempo must be converted before entry.
+- `docs/SEO_KEYWORD_MAP.md` records measured keyword groups, source-date KD discrepancies, rejected intents, and the correct URL mapping. `npm run check` now checks page-intent contracts; no duplicate keyword doorway pages were added.
+- Preview remains **noindex** until real-domain and contact requirements are set. No Google indexation, Cloudflare deployment or AdSense activation is claimed by this code change.

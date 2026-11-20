@@ -27,3 +27,19 @@ test('frequency and milliseconds formatting',()=>{
 test('invalid variation gives null instead of silently returning straight',()=>{
   assert.equal(noteDurationMs(120,0.5,'unknown'),null);
 });
+
+import {TIME_SIGNATURES, validateMeter, barDurationMs} from '../src/core/timing.mjs';
+test('bar length follows meter using quarter-note BPM',()=>{
+  assert.equal(barDurationMs(120,'4/4'),2000);
+  assert.equal(barDurationMs(120,'3/4'),1500);
+  assert.equal(barDurationMs(120,'6/8'),1500);
+  assert.equal(barDurationMs(120,'2/4'),1000);
+  assert.equal(barDurationMs(120,'12/8'),3000);
+});
+test('invalid meter and BPM do not return fabricated bar timing',()=>{
+  assert.equal(validateMeter('7/16'),null);
+  assert.equal(validateMeter('__proto__'),null);
+  assert.equal(barDurationMs(120,'7/16'),null);
+  assert.equal(barDurationMs(0,'4/4'),null);
+  assert.equal(Object.isFrozen(TIME_SIGNATURES),true);
+});

@@ -156,3 +156,28 @@
 .instrument[data-state="measuring"] .live-led { background:var(--yellow); box-shadow:0 0 0 4px rgba(221,246,106,.2); }
 .instrument[data-state="paused"] .live-led { background:#a0a8a2; box-shadow:none; }
 .instrument[data-state="measuring"] .display-unit { color:var(--yellow); }
+
+/* V2.5: user-driven functionality and accurate, copyable music timing data. */
+.hero h1 {font-size:clamp(62px,6.7vw,111px);letter-spacing:-.078em}
+.method-section {padding-top:70px;padding-bottom:70px}
+.method-header {display:flex;justify-content:space-between;align-items:end;gap:42px;margin:36px 0 28px}
+.method-header h2 {font:700 clamp(40px,4.4vw,70px)/1.02 var(--display);letter-spacing:-.07em;margin:13px 0 0}
+.method-header h2 span {color:var(--blue)}
+.method-header>p {max-width:320px;font-size:14px;line-height:1.7;color:var(--soft-text)}
+.method-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0;padding:0;list-style:none}
+.method-grid li {min-width:0;padding:24px;border:1px solid #d4ded3;border-radius:15px;background:#fff}
+.method-grid li>strong {font:750 14px var(--font);color:var(--blue)}
+.method-grid h3 {font:700 21px/1.2 var(--display);letter-spacing:-.04em;margin:25px 0 10px}
+.method-grid p {font-size:13px;line-height:1.7;color:#53605a;margin:0}
+.method-formula {background:#edf2e9;border-radius:12px;padding:17px 20px;line-height:1.65;color:#36443c;font-size:13px;margin:15px 0 0}
+.meter-label{margin:24px 0 10px}
+#time-signature{display:block;width:100%;border-radius:10px;border:1px solid #b7c4b3;background:#fff;color:var(--ink);padding:12px 16px;min-height:48px;font:700 16px var(--font);cursor:pointer}
+#time-signature:focus-visible{outline:3px solid #b7c774;outline-offset:2px}
+.meter-help{margin-top:9px;margin-bottom:0;line-height:1.6}
+.timing-copy{appearance:none;display:flex;align-items:center;justify-content:center;gap:5px;width:100%;min-width:84px;min-height:44px;border:1px solid transparent;border-radius:7px;background:transparent;color:inherit;cursor:pointer;font:inherit;white-space:nowrap;padding:7px 4px}
+.timing-copy:hover{background:#edf4e3;border-color:#b9c6b1}
+.timing-copy:focus-visible{outline:3px solid #798c56;outline-offset:1px}
+.copy-glyph{opacity:0;font-size:12px;color:#395b42;transition:opacity .12s}
+.timing-copy:hover .copy-glyph,.timing-copy:focus-visible .copy-glyph{opacity:1}
+@media(max-width:820px){.method-header{gap:24px}.method-grid h3{font-size:18px}}
+@media(max-width:560px){.hero h1{font-size:clamp(42px,10.7vw,57px);line-height:.96}.method-section{padding-top:48px;padding-bottom:48px}.method-header{display:block;margin:23px 0}.method-header h2{font-size:clamp(38px,10vw,54px)}.method-header>p{max-width:none}.method-grid{grid-template-columns:1fr;gap:10px}.method-grid li{padding:17px 18px}.method-grid h3{margin:8px 0;font-size:20px}.method-formula{padding:14px 16px}.copy-glyph{opacity:.55}}
