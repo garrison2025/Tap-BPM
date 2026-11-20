@@ -1,6 +1,10 @@
-# Tempo Lab — Tap BPM / Free SEO Traffic Site Prototype (V1.1)
+# Tempo Lab — Tap BPM / Free SEO Traffic Site Prototype (V2.0 UI)
 
 An **offline-capable once loaded, zero-dependency browser prototype** for the approved V1.1 research plan. **This is a working code prototype, not an indexed SEO launch.** The name "Tempo Lab" is provisional; no domain has been purchased or deployed.
+
+## UI redesign V2.0
+
+Visual references: Ableton Learning Music (rhythm visualization), Soundbrenner (tactile interaction), Linear (typographic restraint). An original light editorial palette with a dark tempo instrument, indigo accent, and lime interaction color. No external fonts/assets and no JS dependencies; calculations and routes unchanged.
 
 ## Included
 
@@ -18,7 +22,7 @@ An **offline-capable once loaded, zero-dependency browser prototype** for the ap
 Requires Node.js >=18 only for local builds and tests (no `npm install` required).
 
 ```powershell
-cd Tap_BPM_Prototype_V1.1
+cd Tap_BPM_UI_V2
 npm test
 npm run build
 npm run dev
