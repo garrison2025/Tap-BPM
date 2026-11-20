@@ -14,6 +14,9 @@ function rowMarkup(note) {
 
 function render() {
   const bpm = validateBpm(bpmInput.value);
+  document.querySelectorAll('[data-preset]').forEach((button) => {
+    button.setAttribute('aria-pressed', String(bpm !== null && Number(button.dataset.preset) === bpm));
+  });
   const error = document.querySelector('#bpm-error');
   error.hidden = bpm !== null || bpmInput.value === '';
   bpmInput.setAttribute('aria-invalid', String(bpm === null && bpmInput.value !== ''));

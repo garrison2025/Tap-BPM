@@ -22,7 +22,7 @@ const history = [];
 
 function render() {
   const value = displayBpm(state.bpm, factor);
-  tapBpm.textContent = value == null ? '—' : Number.isInteger(value) ? String(value) : value.toFixed(1);
+  tapBpm.textContent = value == null ? '--' : Number.isInteger(value) ? String(value) : value.toFixed(1);
   count.textContent = state.tapCount;
   consistency.textContent = consistencyLabel(state.consistency, state.tapCount);
   interval.textContent = state.medianInterval == null ? '—' : `${Math.round(state.medianInterval)} ms`;

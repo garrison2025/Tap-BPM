@@ -84,3 +84,11 @@ Functional acceptance cases:
 6. The app stores the latest BPM in sessionStorage for navigation, but no server receives tap history.
 7. No third-party advertisements, analytics, tracking, consent manager or `ads.txt` are added in this prototype.
 8. User's V1.1 research workbook is supplied separately / in `research/` for reference. None of its historical SEO figures are fabricated or used to create doorway pages.
+
+## UI V2.1 refinement (2026-11-20)
+
+- Reduced the accent palette to one high-visibility lime interaction color, with indigo reserved for selective data emphasis.
+- Improved text contrast, tightened small-screen spacing and moved the interactive Tap console higher in the mobile viewport.
+- Replaced the full-lime Delay input panel with a calm neutral surface and added clear `aria-pressed` feedback to BPM presets.
+- Preserved all timing algorithms, routes, search intent targeting and prototype `noindex` protection.
+- Verified browser layouts at 1440, 390 and 320 CSS pixels, alongside all 20 existing timing tests.

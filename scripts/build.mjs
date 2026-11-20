@@ -30,7 +30,7 @@ const header = `<a class="sr-only" style="position:fixed" href="#main">Skip to c
 const footer = `<footer class="footer"><div class="container footer-grid"><div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><b></b><b></b><b></b><b></b></span><span class="brand-word">tempo<span>lab.</span></span></a><p class="footer-note">© ${year} Tempo Lab prototype. Free rhythm tools, no uploads. Brand provisional until launch.</p></div><div class="footer-links"><a href="/">Tap Tempo</a><a href="/delay-reverb-calculator/">Delay Calculator</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/contact/">Feedback</a></div></div></footer><div class="toast" role="status" aria-live="polite" data-toast></div><script type="module" src="/assets/shared.js"></script>`;
 function getMeta(title, description, route, key) {
   const url = siteUrl + '/' + (route ? `${route}/` : '');
-  const base = `<meta name="description" content="${escapeHtml(description)}"/><meta name="theme-color" content="#f7f7f1"/><meta property="og:title" content="${escapeHtml(title)}"/><meta property="og:description" content="${escapeHtml(description)}"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary"/>`;
+  const base = `<meta name="description" content="${escapeHtml(description)}"/><meta name="theme-color" content="#f5f6f2"/><meta property="og:title" content="${escapeHtml(title)}"/><meta property="og:description" content="${escapeHtml(description)}"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary"/>`;
   if (!production) return base + '<meta name="robots" content="noindex, nofollow"/>';
   let structured = '';
   if (['home', 'delay'].includes(key)) {
